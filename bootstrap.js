@@ -19,6 +19,14 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
               <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
             </RDF:Description>
           </em:targetApplication>
+          <em:targetApplication>
+            <RDF:Description>
+              <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+              <em:minVersion>2.40</em:minVersion>
+              <em:maxVersion>*</em:maxVersion>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+            </RDF:Description>
+          </em:targetApplication>
         </RDF:Description>
       </RDF:li>
     </RDF:Seq>
