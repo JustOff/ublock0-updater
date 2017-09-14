@@ -1,0 +1,1 @@
+**uBlock Origin Updater** provides updates for [uBlock Origin](https://github.com/gorhill/uBlock) directly from GitHub. It intercepts Add-ons Manager requests and returns the latest release version compatible with Pale Moon and SeaMonkey.
