@@ -5,27 +5,25 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
-const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
-    <em:updates>
-      <RDF:Seq>
-        <RDF:li>
-          <RDF:Description>
-            <em:version>%VERSION%</em:version>
-            <em:targetApplication>
-              <RDF:Description>
-                <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
-                <em:minVersion>27.0.0</em:minVersion>
-                <em:maxVersion>27.*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
-              </RDF:Description>
-            </em:targetApplication>
-          </RDF:Description>
-        </RDF:li>
-      </RDF:Seq>
-    </em:updates>
-  </RDF:Description>
-</RDF:RDF>`;
+const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
+  <em:updates>
+    <RDF:Seq>
+      <RDF:li>
+        <RDF:Description>
+          <em:version>%VERSION%</em:version>
+          <em:targetApplication>
+            <RDF:Description>
+              <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
+              <em:minVersion>27.0.0</em:minVersion>
+              <em:maxVersion>27.*</em:maxVersion>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+            </RDF:Description>
+          </em:targetApplication>
+        </RDF:Description>
+      </RDF:li>
+    </RDF:Seq>
+  </em:updates>
+</RDF:Description>`;
 
 var u0Ver = "";
 
@@ -82,13 +80,11 @@ TracingListener.prototype = {
 		}
 	},
 	onStopRequest: function(request, context, statusCode) {
-		var upd, data = this.receivedData.join("");
+		var upd = "", data = this.receivedData.join("");
 		if (u0Ver != "") {
 			upd = u0Data.replace(/%VERSION%/g, u0Ver);
-			data = data.replace(/<RDF[\s\S]*>/, upd);
-		} else {
-			data = data.replace(/<RDF:Description[\s\S]*Description>/, upd);
 		}
+		data = data.replace(/<RDF:Description[\s\S]*Description>/, upd);
 		var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
 		storageStream.init(8192, data.length, null);
 		var os = storageStream.getOutputStream(0);
