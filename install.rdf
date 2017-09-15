@@ -10,6 +10,7 @@
 	<em:creator>Off JustOff &lt;Off.Just.Off@gmail.com&gt;</em:creator>
 	<em:homepageURL>https://github.com/JustOff/ublock0-updater/</em:homepageURL>
 	<em:updateURL>https://raw.githubusercontent.com/JustOff/ublock0-updater/master/update.xml</em:updateURL>
+	<em:multiprocessCompatible>true</em:multiprocessCompatible>
 	<em:targetApplication>
 	  <Description>
 		<em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
