@@ -4,6 +4,7 @@ const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr, Constructor: CC} = C
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
+const branch = "extensions.ublock0-updater.";
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
 const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
   <em:updates>
@@ -33,7 +34,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
   </em:updates>
 </RDF:Description>`;
 
-var u0Ver = "";
+var u0Beta = false, u0Ver = "";
 
 var httpObserver = {
 	observe: function(subject, topic, data) {
@@ -116,41 +117,82 @@ TracingListener.prototype = {
 	}
 }
 
-function doUpdate() {
-	AddonManager.getAddonByID(u0id, function(addon) {
-		addon.findUpdates({
-			onUpdateAvailable: function(aAddon, aInstall) {
-				if (aAddon.permissions & AddonManager.PERM_CAN_UPGRADE && AddonManager.shouldAutoUpdate(aAddon)) {
-					aInstall.install();
+var prefObserver = {
+	observe: function(subject, topic, data) {
+		if (topic == "nsPref:changed" && data == "u0Beta") {
+			u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
+			u0Ver = "";
+			AddonManager.getAllInstalls(function(aList) {
+				for (var addon of aList) {
+					if (addon.existingAddon && addon.existingAddon.id == u0id) {
+						addon.cancel();
+					}
 				}
-			}
-		}, AddonManager.UPDATE_WHEN_USER_REQUESTED);
-	});
+			})
+		}
+	},
+	register: function() {
+		this.prefBranch = Services.prefs.getBranch(branch);
+		this.prefBranch.addObserver("", this, false);
+	},
+	unregister: function() {
+		this.prefBranch.removeObserver("", this);
+	}
+}
+
+function doUpdate(newVer) {
+	if (newVer != u0Ver) {
+		u0Ver = newVer;
+		AddonManager.getAddonByID(u0id, function(addon) {
+			addon.findUpdates({
+				onUpdateAvailable: function(aAddon, aInstall) {
+					if (aAddon.permissions & AddonManager.PERM_CAN_UPGRADE && AddonManager.shouldAutoUpdate(aAddon)) {
+						aInstall.install();
+					}
+				}
+			}, AddonManager.UPDATE_WHEN_USER_REQUESTED);
+		});
+	}
 }
 
 function checkUpdate() {
-	var ver, request = new XMLHttpRequest();
-	request.open("HEAD", "https://github.com/gorhill/uBlock/releases/latest");
-	request.onreadystatechange = function() {
-		if (this.readyState === this.DONE) {
-			if ((ver = /tag\/(\d+\.\d+\.\d+)$/.exec(this.responseURL)) !== null) {
-				if (u0Ver != ver[1]) {
-					u0Ver = ver[1];
-					doUpdate()
+	var ver, tag, request = new XMLHttpRequest();
+	if (u0Beta) {
+		request.open("GET", "https://github.com/gorhill/uBlock/releases");
+		request.responseType = "document";
+		request.onload = function() {
+			try {
+				tag = this.responseXML.getElementsByClassName("release-title")[0].getElementsByTagName("a")[0].href;
+				if ((ver = /tag\/(\d+\.\d+\.\w+)$/.exec(tag)) !== null) {
+					doUpdate(ver[1]);
+				}
+			} catch (e) {}
+		}
+	} else {
+		request.open("HEAD", "https://github.com/gorhill/uBlock/releases/latest");
+		request.onreadystatechange = function() {
+			if (this.readyState === this.DONE) {
+				if ((ver = /tag\/(\d+\.\d+\.\d+)$/.exec(this.responseURL)) !== null) {
+					doUpdate(ver[1]);
 				}
 			}
 		}
-	};
+	}
 	request.send();
 }
 
 function startup(data, reason) {
+	try {
+		u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
+	} catch (e) {}
+	prefObserver.register();
 	httpObserver.register();
 }
 
 function shutdown(data, reason) {
 	if (reason == APP_SHUTDOWN) return;
 	httpObserver.unregister();
+	prefObserver.unregister();
 }
 
 function install() {};
