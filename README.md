@@ -1,1 +1,1 @@
-**uBlock Origin Updater** provides updates for [uBlock Origin](https://github.com/gorhill/uBlock) directly from GitHub. It intercepts Add-ons Manager requests and returns the latest XUL (legacy) version compatible with Pale Moon, SeaMonkey and FireFox.
+**uBlock Origin Updater** provides updates for [uBlock Origin](https://github.com/gorhill/uBlock) directly from GitHub. It intercepts Add-ons Manager requests and returns the latest XUL (legacy) version compatible with Pale Moon, SeaMonkey and Firefox.
