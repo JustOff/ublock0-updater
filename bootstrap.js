@@ -212,7 +212,7 @@ function doUpdate(app, newVer) {
 
 function checkUpdate(app, dir) {
 	var ver, tag, request = new XMLHttpRequest();
-	if (u0upd == 1 || uMupd == 1) {
+	if (app == u0id && u0upd == 1 || app == uMid && uMupd == 1) {
 		request.open("HEAD", "https://github.com/gorhill/" + dir + "/releases/latest");
 		request.onreadystatechange = function() {
 			if (this.readyState === this.DONE) {
@@ -221,7 +221,7 @@ function checkUpdate(app, dir) {
 				}
 			}
 		}
-	} else if (u0upd == 2 || uMupd == 2) {
+	} else if (app == u0id && u0upd == 2 || app == uMid && uMupd == 2) {
 		request.open("GET", "https://github.com/gorhill/" + dir + "/releases");
 		request.responseType = "document";
 		request.onload = function() {
