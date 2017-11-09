@@ -52,6 +52,9 @@ const u0id = "uBlock0@raymondhill.net", u0dir = "uBlock", u0file = "uBlock0.fire
   </em:updates>
 </RDF:Description>`;
 
+const styleSheetService = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
+const cssFixURI = Services.io.newURI("data:text/css," + encodeURIComponent("#uBO-popup-panel body #panes > div:nth-of-type(2) {direction:ltr !important;}"), null, null);
+
 var u0upd, uMupd, u0ver = "", uMver = "";
 
 var httpObserver = {
@@ -255,12 +258,20 @@ function startup(data, reason) {
 
 	prefObserver.register();
 	httpObserver.register();
+
+	if (Services.appinfo.name == "Pale Moon" && !styleSheetService.sheetRegistered(cssFixURI, styleSheetService.USER_SHEET)) {
+		styleSheetService.loadAndRegisterSheet(cssFixURI, styleSheetService.USER_SHEET);
+	}
 }
 
 function shutdown(data, reason) {
 	if (reason == APP_SHUTDOWN) return;
 	httpObserver.unregister();
 	prefObserver.unregister();
+
+	if (Services.appinfo.name == "Pale Moon" && styleSheetService.sheetRegistered(cssFixURI, styleSheetService.USER_SHEET)) {
+		styleSheetService.unregisterSheet(cssFixURI, styleSheetService.USER_SHEET);
+	}
 }
 
 function install() {};
