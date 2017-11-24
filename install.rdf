@@ -5,8 +5,8 @@
 	<em:version>1.2.1</em:version>
 	<em:type>2</em:type>
 	<em:bootstrap>true</em:bootstrap>
-	<em:name>uBlock Origin &amp; uMatrix Updater</em:name>
-	<em:description>Keep uBlock Origin &amp; uMatrix up to date using the latest releases from GitHub</em:description>
+	<em:name>uBlock Origin Updater</em:name>
+	<em:description>Keep uBlock Origin up to date using the latest release from GitHub</em:description>
 	<em:creator>Off JustOff &lt;Off.Just.Off@gmail.com&gt;</em:creator>
 	<em:homepageURL>https://github.com/JustOff/ublock0-updater/</em:homepageURL>
 	<em:updateURL>https://raw.githubusercontent.com/JustOff/ublock0-updater/master/update.xml</em:updateURL>

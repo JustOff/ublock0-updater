@@ -1,20 +1,6 @@
 <?xml version="1.0" ?>
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<setting pref="extensions.ublock0-updater.uBlock0" type="radio" title="uBlock Origin">
-		<radiogroup orient="horizontal" preference="">
-			<radio  value="1" label="Release"/>
-			<radio  value="2" label="Beta"/>
-			<radio value="0" label="Off"/>
-		</radiogroup>
-	WARNING! Beta channel is for advanced users only!
+	<setting type="bool" pref="extensions.ublock0-updater.u0Beta" title="Include Beta Versions">
+	WARNING! FOR ADVANCED USERS ONLY!
 	</setting>
-	<setting pref="extensions.ublock0-updater.uMatrix" type="radio" title="uMatrix">
-		<radiogroup orient="horizontal" preference="">
-			<radio  value="1" label="Release"/>
-			<radio  value="2" label="Beta"/>
-			<radio value="0" label="Off"/>
-		</radiogroup>
-	WARNING! Beta channel is for advanced users only!
-	</setting>
-
 </vbox>
