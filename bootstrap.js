@@ -198,16 +198,8 @@ function checkUpdate() {
 }
 
 function startup(data, reason) {
-	var mainBranch = Services.prefs.getBranch(branch);
-	try { // migration, should be removed in next version
-		if (mainBranch.getIntPref("uBlock0") == 2) {
-			mainBranch.setBoolPref("u0Beta", true);
-		}
-		mainBranch.clearUserPref("uBlock0");
-		mainBranch.clearUserPref("uMatrix");
-	} catch (e) {}
 	try {
-		u0Beta = mainBranch.getBoolPref("u0Beta");
+		u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
 	} catch (e) {}
 	prefObserver.register();
 	httpObserver.register();
