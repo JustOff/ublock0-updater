@@ -56,7 +56,7 @@ var httpObserver = {
 	observe: function(subject, topic, data) {
 		if (topic == 'http-on-examine-response' || topic == 'http-on-examine-cached-response') {
 			subject.QueryInterface(Ci.nsIHttpChannel);
-			if (subject.URI.host == "versioncheck.addons.mozilla.org" 
+			if ((subject.URI.host == "versioncheck.addons.mozilla.org" || subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
 					&& subject.URI.path.indexOf("&id=" + u0id +"&") != -1) {
 				checkUpdate();
 				subject.QueryInterface(Ci.nsITraceableChannel);
