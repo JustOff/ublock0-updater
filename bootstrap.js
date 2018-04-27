@@ -17,7 +17,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
               <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
               <em:minVersion>27.0.0</em:minVersion>
               <em:maxVersion>27.*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
             </RDF:Description>
           </em:targetApplication>
           <em:targetApplication>
@@ -25,7 +25,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
               <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
               <em:minVersion>2.40</em:minVersion>
               <em:maxVersion>*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
             </RDF:Description>
           </em:targetApplication>
           <em:targetApplication>
@@ -33,7 +33,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
               <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
               <em:minVersion>45.0</em:minVersion>
               <em:maxVersion>56.*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
             </RDF:Description>
           </em:targetApplication>
           <em:targetApplication>
@@ -41,7 +41,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mo
               <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
               <em:minVersion>45.0</em:minVersion>
               <em:maxVersion>*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox.xpi</em:updateLink>
+              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
             </RDF:Description>
           </em:targetApplication>
         </RDF:Description>
