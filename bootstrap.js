@@ -55,163 +55,163 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
 var u0Beta = false, u0Ver = "";
 
 var httpObserver = {
-	observe: function(subject, topic, data) {
-		if (topic == 'http-on-examine-response' || topic == 'http-on-examine-cached-response') {
-			subject.QueryInterface(Ci.nsIHttpChannel);
-			if ((subject.URI.host == "addons.palemoon.org" ||
-					 subject.URI.host == "versioncheck.addons.mozilla.org" ||
-					 subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
-					&& subject.URI.path.indexOf("&id=" + u0id +"&") != -1) {
-				checkUpdate();
-				subject.QueryInterface(Ci.nsITraceableChannel);
-				var newListener = new TracingListener();
-				newListener.originalListener = subject.setNewListener(newListener);
-			}
-		}
-	},
-	QueryInterface: function(aIID) {
-		if (aIID.equals(Ci.nsIObserver) || aIID.equals(Ci.nsISupports)) {
-			return this;
-		} else {
-			throw Cr.NS_NOINTERFACE;
-		}
-	},
-	register: function() {
-		Services.obs.addObserver(this, "http-on-examine-cached-response", false);
-		Services.obs.addObserver(this, "http-on-examine-response", false);
-	},
-	unregister: function() {
-		Services.obs.removeObserver(this, "http-on-examine-cached-response");
-		Services.obs.removeObserver(this, "http-on-examine-response");
-	}
+  observe: function(subject, topic, data) {
+    if (topic == 'http-on-examine-response' || topic == 'http-on-examine-cached-response') {
+      subject.QueryInterface(Ci.nsIHttpChannel);
+      if ((subject.URI.host == "addons.palemoon.org" ||
+           subject.URI.host == "versioncheck.addons.mozilla.org" ||
+           subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
+          && subject.URI.path.indexOf("&id=" + u0id +"&") != -1) {
+        checkUpdate();
+        subject.QueryInterface(Ci.nsITraceableChannel);
+        var newListener = new TracingListener();
+        newListener.originalListener = subject.setNewListener(newListener);
+      }
+    }
+  },
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsIObserver) || aIID.equals(Ci.nsISupports)) {
+      return this;
+    } else {
+      throw Cr.NS_NOINTERFACE;
+    }
+  },
+  register: function() {
+    Services.obs.addObserver(this, "http-on-examine-cached-response", false);
+    Services.obs.addObserver(this, "http-on-examine-response", false);
+  },
+  unregister: function() {
+    Services.obs.removeObserver(this, "http-on-examine-cached-response");
+    Services.obs.removeObserver(this, "http-on-examine-response");
+  }
 }
 
 function CCIN(cName, ifaceName) {
-	return Cc[cName].createInstance(Ci[ifaceName]);
+  return Cc[cName].createInstance(Ci[ifaceName]);
 }
 
 function TracingListener() {
-	this.receivedData = [];
+  this.receivedData = [];
 }
 
 TracingListener.prototype = {
-	onDataAvailable: function(request, context, inputStream, offset, count) {
-		var binaryInputStream = CCIN("@mozilla.org/binaryinputstream;1","nsIBinaryInputStream");
-		binaryInputStream.setInputStream(inputStream);
-		var data = binaryInputStream.readBytes(count);
-		this.receivedData.push(data);
-	},
-	onStartRequest: function(request, context) {
-		try {
-			this.originalListener.onStartRequest(request, context);
-		} catch (err) {
-			request.cancel(err.result);
-		}
-	},
-	onStopRequest: function(request, context, statusCode) {
-		var upd = "", data = this.receivedData.join("");
-		if (u0Ver != "") {
-			upd = u0Data.replace(/%VERSION%/g, u0Ver);
-		} else {
-			upd = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
-		}
-		data = data.replace(/<RDF:RDF xmlns:RDF[\s\S]*<\/RDF:RDF>/, upd);
-		var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
-		storageStream.init(8192, data.length, null);
-		var os = storageStream.getOutputStream(0);
-		if (data.length > 0) {
-			os.write(data, data.length);
-		}
-		os.close();
-		try {
-			this.originalListener.onDataAvailable(request, context, storageStream.newInputStream(0), 0, data.length);
-		} catch (e) {}
-		try {
-			this.originalListener.onStopRequest(request, context, statusCode);
-		} catch (e) {}
-	},
-	QueryInterface: function(aIID) {
-		if (aIID.equals(Ci.nsIStreamListener) || aIID.equals(Ci.nsISupports)) {
-			return this;
-		} else {
-			throw Cr.NS_NOINTERFACE;
-		}
-	}
+  onDataAvailable: function(request, context, inputStream, offset, count) {
+    var binaryInputStream = CCIN("@mozilla.org/binaryinputstream;1","nsIBinaryInputStream");
+    binaryInputStream.setInputStream(inputStream);
+    var data = binaryInputStream.readBytes(count);
+    this.receivedData.push(data);
+  },
+  onStartRequest: function(request, context) {
+    try {
+      this.originalListener.onStartRequest(request, context);
+    } catch (err) {
+      request.cancel(err.result);
+    }
+  },
+  onStopRequest: function(request, context, statusCode) {
+    var upd = "", data = this.receivedData.join("");
+    if (u0Ver != "") {
+      upd = u0Data.replace(/%VERSION%/g, u0Ver);
+    } else {
+      upd = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
+    }
+    data = data.replace(/<RDF:RDF xmlns:RDF[\s\S]*<\/RDF:RDF>/, upd);
+    var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
+    storageStream.init(8192, data.length, null);
+    var os = storageStream.getOutputStream(0);
+    if (data.length > 0) {
+      os.write(data, data.length);
+    }
+    os.close();
+    try {
+      this.originalListener.onDataAvailable(request, context, storageStream.newInputStream(0), 0, data.length);
+    } catch (e) {}
+    try {
+      this.originalListener.onStopRequest(request, context, statusCode);
+    } catch (e) {}
+  },
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsIStreamListener) || aIID.equals(Ci.nsISupports)) {
+      return this;
+    } else {
+      throw Cr.NS_NOINTERFACE;
+    }
+  }
 }
 
 var prefObserver = {
-	observe: function(subject, topic, data) {
-		if (topic == "nsPref:changed" && data == "u0Beta") {
-			u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
-			u0Ver = "";
-			AddonManager.getAllInstalls(function(aList) {
-				for (var addon of aList) {
-					if (addon.existingAddon && addon.existingAddon.id == u0id) {
-						addon.cancel();
-					}
-				}
-			})
-		}
-	},
-	register: function() {
-		this.prefBranch = Services.prefs.getBranch(branch);
-		this.prefBranch.addObserver("", this, false);
-	},
-	unregister: function() {
-		this.prefBranch.removeObserver("", this);
-	}
+  observe: function(subject, topic, data) {
+    if (topic == "nsPref:changed" && data == "u0Beta") {
+      u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
+      u0Ver = "";
+      AddonManager.getAllInstalls(function(aList) {
+        for (var addon of aList) {
+          if (addon.existingAddon && addon.existingAddon.id == u0id) {
+            addon.cancel();
+          }
+        }
+      })
+    }
+  },
+  register: function() {
+    this.prefBranch = Services.prefs.getBranch(branch);
+    this.prefBranch.addObserver("", this, false);
+  },
+  unregister: function() {
+    this.prefBranch.removeObserver("", this);
+  }
 }
 
 function doUpdate(newVer) {
-	if (newVer != u0Ver) {
-		u0Ver = newVer;
-		AddonManager.getAddonByID(u0id, function(addon) {
-			addon.findUpdates({
-				onUpdateAvailable: function(aAddon, aInstall) {
-					if (aAddon.permissions & AddonManager.PERM_CAN_UPGRADE && AddonManager.shouldAutoUpdate(aAddon)) {
-						aInstall.install();
-					}
-				}
-			}, AddonManager.UPDATE_WHEN_USER_REQUESTED);
-		});
-	}
+  if (newVer != u0Ver) {
+    u0Ver = newVer;
+    AddonManager.getAddonByID(u0id, function(addon) {
+      addon.findUpdates({
+        onUpdateAvailable: function(aAddon, aInstall) {
+          if (aAddon.permissions & AddonManager.PERM_CAN_UPGRADE && AddonManager.shouldAutoUpdate(aAddon)) {
+            aInstall.install();
+          }
+        }
+      }, AddonManager.UPDATE_WHEN_USER_REQUESTED);
+    });
+  }
 }
 
 function checkUpdate() {
-	var ver, vermask, request = new XMLHttpRequest();
-	if (u0Beta) {
-		vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\w+)$/;
-	} else {
-		vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+)$/;
-	}
-	request.open("GET", "https://github.com/gorhill/uBlock");
-	request.responseType = "document";
-	request.onload = function() {
-		try {
-			var tags = this.responseXML.querySelector("div[data-tab-filter='tags']").querySelectorAll("a[href*='firefox-legacy']");
-			for (var tag of tags) {
-				if ((ver = vermask.exec(tag)) !== null) {
-					doUpdate(ver[1]);
-					break;
-				}
-			}
-		} catch (e) {}
-	}
-	request.send();
+  var ver, vermask, request = new XMLHttpRequest();
+  if (u0Beta) {
+    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\w+)$/;
+  } else {
+    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+)$/;
+  }
+  request.open("GET", "https://github.com/gorhill/uBlock");
+  request.responseType = "document";
+  request.onload = function() {
+    try {
+      var tags = this.responseXML.querySelector("div[data-tab-filter='tags']").querySelectorAll("a[href*='firefox-legacy']");
+      for (var tag of tags) {
+        if ((ver = vermask.exec(tag)) !== null) {
+          doUpdate(ver[1]);
+          break;
+        }
+      }
+    } catch (e) {}
+  }
+  request.send();
 }
 
 function startup(data, reason) {
-	try {
-		u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
-	} catch (e) {}
-	prefObserver.register();
-	httpObserver.register();
+  try {
+    u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
+  } catch (e) {}
+  prefObserver.register();
+  httpObserver.register();
 }
 
 function shutdown(data, reason) {
-	if (reason == APP_SHUTDOWN) return;
-	httpObserver.unregister();
-	prefObserver.unregister();
+  if (reason == APP_SHUTDOWN) return;
+  httpObserver.unregister();
+  prefObserver.unregister();
 }
 
 function install() {};
