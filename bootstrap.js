@@ -6,49 +6,51 @@ Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const branch = "extensions.ublock0-updater.";
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
-const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
-  <em:updates>
-    <RDF:Seq>
-      <RDF:li>
-        <RDF:Description>
-          <em:version>%VERSION%</em:version>
-          <em:targetApplication>
-            <RDF:Description>
-              <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
-              <em:minVersion>27.0.0</em:minVersion>
-              <em:maxVersion>28.*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-            </RDF:Description>
-          </em:targetApplication>
-          <em:targetApplication>
-            <RDF:Description>
-              <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-              <em:minVersion>2.40</em:minVersion>
-              <em:maxVersion>*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-            </RDF:Description>
-          </em:targetApplication>
-          <em:targetApplication>
-            <RDF:Description>
-              <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-              <em:minVersion>45.0</em:minVersion>
-              <em:maxVersion>56.*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-            </RDF:Description>
-          </em:targetApplication>
-          <em:targetApplication>
-            <RDF:Description>
-              <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-              <em:minVersion>45.0</em:minVersion>
-              <em:maxVersion>*</em:maxVersion>
-              <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-            </RDF:Description>
-          </em:targetApplication>
-        </RDF:Description>
-      </RDF:li>
-    </RDF:Seq>
-  </em:updates>
-</RDF:Description>`;
+const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
+    <em:updates>
+      <RDF:Seq>
+        <RDF:li>
+          <RDF:Description>
+            <em:version>%VERSION%</em:version>
+            <em:targetApplication>
+              <RDF:Description>
+                <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
+                <em:minVersion>27.0.0</em:minVersion>
+                <em:maxVersion>28.*</em:maxVersion>
+                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+              </RDF:Description>
+            </em:targetApplication>
+            <em:targetApplication>
+              <RDF:Description>
+                <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+                <em:minVersion>2.40</em:minVersion>
+                <em:maxVersion>*</em:maxVersion>
+                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+              </RDF:Description>
+            </em:targetApplication>
+            <em:targetApplication>
+              <RDF:Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>45.0</em:minVersion>
+                <em:maxVersion>56.*</em:maxVersion>
+                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+              </RDF:Description>
+            </em:targetApplication>
+            <em:targetApplication>
+              <RDF:Description>
+                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+                <em:minVersion>45.0</em:minVersion>
+                <em:maxVersion>*</em:maxVersion>
+                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+              </RDF:Description>
+            </em:targetApplication>
+          </RDF:Description>
+        </RDF:li>
+      </RDF:Seq>
+    </em:updates>
+  </RDF:Description>
+</RDF:RDF>`;
 
 var u0Beta = false, u0Ver = "";
 
@@ -56,7 +58,9 @@ var httpObserver = {
 	observe: function(subject, topic, data) {
 		if (topic == 'http-on-examine-response' || topic == 'http-on-examine-cached-response') {
 			subject.QueryInterface(Ci.nsIHttpChannel);
-			if ((subject.URI.host == "versioncheck.addons.mozilla.org" || subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
+			if ((subject.URI.host == "addons.palemoon.org" ||
+					 subject.URI.host == "versioncheck.addons.mozilla.org" ||
+					 subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
 					&& subject.URI.path.indexOf("&id=" + u0id +"&") != -1) {
 				checkUpdate();
 				subject.QueryInterface(Ci.nsITraceableChannel);
@@ -108,8 +112,10 @@ TracingListener.prototype = {
 		var upd = "", data = this.receivedData.join("");
 		if (u0Ver != "") {
 			upd = u0Data.replace(/%VERSION%/g, u0Ver);
+		} else {
+			upd = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
 		}
-		data = data.replace(/<RDF:Description[\s\S]*Description>/, upd);
+		data = data.replace(/<RDF:RDF xmlns:RDF[\s\S]*<\/RDF:RDF>/, upd);
 		var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
 		storageStream.init(8192, data.length, null);
 		var os = storageStream.getOutputStream(0);
