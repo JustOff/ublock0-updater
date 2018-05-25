@@ -6,7 +6,8 @@ Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const branch = "extensions.ublock0-updater.";
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
-const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+const u0id = "uBlock0@raymondhill.net", u0Data = `<?xml version="1.0" encoding="UTF-8"?>
+<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
     <em:updates>
       <RDF:Seq>
@@ -91,15 +92,10 @@ function CCIN(cName, ifaceName) {
 }
 
 function TracingListener() {
-  this.receivedData = [];
 }
 
 TracingListener.prototype = {
   onDataAvailable: function(request, context, inputStream, offset, count) {
-    var binaryInputStream = CCIN("@mozilla.org/binaryinputstream;1","nsIBinaryInputStream");
-    binaryInputStream.setInputStream(inputStream);
-    var data = binaryInputStream.readBytes(count);
-    this.receivedData.push(data);
   },
   onStartRequest: function(request, context) {
     try {
@@ -109,13 +105,12 @@ TracingListener.prototype = {
     }
   },
   onStopRequest: function(request, context, statusCode) {
-    var upd = "", data = this.receivedData.join("");
+    var data;
     if (u0Ver != "") {
-      upd = u0Data.replace(/%VERSION%/g, u0Ver);
+      data = u0Data.replace(/%VERSION%/g, u0Ver);
     } else {
-      upd = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
+      data = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
     }
-    data = data.replace(/<RDF:RDF xmlns:RDF[\s\S]*<\/RDF:RDF>/, upd);
     var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
     storageStream.init(8192, data.length, null);
     var os = storageStream.getOutputStream(0);
