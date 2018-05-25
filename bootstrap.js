@@ -6,8 +6,7 @@ Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const branch = "extensions.ublock0-updater.";
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
-const u0id = "uBlock0@raymondhill.net", u0Data = `<?xml version="1.0" encoding="UTF-8"?>
-<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
     <em:updates>
       <RDF:Seq>
@@ -105,11 +104,11 @@ TracingListener.prototype = {
     }
   },
   onStopRequest: function(request, context, statusCode) {
-    var data;
+    var data = '<?xml version="1.0" encoding="UTF-8"?>';
     if (u0Ver != "") {
-      data = u0Data.replace(/%VERSION%/g, u0Ver);
+      data += u0Data.replace(/%VERSION%/g, u0Ver);
     } else {
-      data = '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
+      data += '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
     }
     var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
     storageStream.init(8192, data.length, null);
