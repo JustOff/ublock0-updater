@@ -174,7 +174,7 @@ function doUpdate(newVer) {
 function checkUpdate() {
   var ver, vermask, request = new XMLHttpRequest();
   if (u0Beta) {
-    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\w+)$/;
+    vermask = /tree\/firefox\-legacy\-(\d+(\.\w+)+)$/;
   } else {
     vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)$/;
   }
