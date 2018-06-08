@@ -176,7 +176,7 @@ function checkUpdate() {
   if (u0Beta) {
     vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\w+)$/;
   } else {
-    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+)$/;
+    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)$/;
   }
   request.open("GET", "https://github.com/gorhill/uBlock");
   request.responseType = "document";
