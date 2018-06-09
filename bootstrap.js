@@ -95,6 +95,10 @@ function TracingListener() {
 
 TracingListener.prototype = {
   onDataAvailable: function(request, context, inputStream, offset, count) {
+    // by contract mListener must read all of "count" bytes, see #266532
+    var binaryInputStream = CCIN("@mozilla.org/binaryinputstream;1","nsIBinaryInputStream");
+    binaryInputStream.setInputStream(inputStream);
+    var data = binaryInputStream.readBytes(count);
   },
   onStartRequest: function(request, context) {
     try {
