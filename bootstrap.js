@@ -40,7 +40,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
             <em:targetApplication>
               <RDF:Description>
                 <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-                <em:minVersion>45.0</em:minVersion>
+                <em:minVersion>38.0</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
                 <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
               </RDF:Description>
