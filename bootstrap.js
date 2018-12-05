@@ -186,7 +186,7 @@ function checkUpdate() {
   request.responseType = "document";
   request.onload = function() {
     try {
-      var tags = this.responseXML.querySelector("div[data-tab-filter='tags']").querySelectorAll("a[href*='firefox-legacy']");
+      var tags = this.responseXML.querySelector("div.branch-select-menu").querySelectorAll("a[href*='firefox-legacy']");
       for (var tag of tags) {
         if ((ver = vermask.exec(tag)) !== null) {
           doUpdate(ver[1]);
