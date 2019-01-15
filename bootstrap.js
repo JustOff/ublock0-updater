@@ -178,22 +178,15 @@ function doUpdate(newVer) {
 function checkUpdate() {
   var ver, vermask, request = new XMLHttpRequest();
   if (u0Beta) {
-    vermask = /tree\/firefox\-legacy\-(\d+(\.\w+)+)$/;
+    vermask = /tree\/firefox\-legacy\-(\d+(\.\w+)+)/;
   } else {
-    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)$/;
+    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)/;
   }
-  request.open("GET", "https://github.com/gorhill/uBlock");
-  request.responseType = "document";
+  request.open("GET", "https://github.com/gorhill/uBlock/ref-list/master?source_action=disambiguate&source_controller=files");
   request.onload = function() {
-    try {
-      var tags = this.responseXML.querySelector("div.branch-select-menu").querySelectorAll("a[href*='firefox-legacy']");
-      for (var tag of tags) {
-        if ((ver = vermask.exec(tag)) !== null) {
-          doUpdate(ver[1]);
-          break;
-        }
-      }
-    } catch (e) {}
+    if ((ver = vermask.exec(request.responseText)) !== null) {
+      doUpdate(ver[1]);
+    }
   }
   request.send();
 }
