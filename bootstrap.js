@@ -59,6 +59,7 @@ var httpObserver = {
     if (topic == 'http-on-examine-response' || topic == 'http-on-examine-cached-response') {
       subject.QueryInterface(Ci.nsIHttpChannel);
       if ((subject.URI.host == "addons.palemoon.org" ||
+           subject.URI.host == "addons.basilisk-browser.org" ||
            subject.URI.host == "versioncheck.addons.mozilla.org" ||
            subject.URI.host == "versioncheck-bg.addons.mozilla.org") 
           && subject.URI.path.indexOf("&id=" + u0id +"&") != -1) {
