@@ -38,6 +38,14 @@
                 <em:updateLink>https://github.com/JustOff/ublock0-updater/releases/download/1.6.7/ublock0-updater-1.6.7.xpi</em:updateLink>
               </RDF:Description>
             </em:targetApplication>
+            <em:targetApplication>
+              <RDF:Description>
+                <em:id>{a3210b97-8e8a-4737-9aa0-aa0e607640b9}</em:id>
+                <em:minVersion>1.0.0a1</em:minVersion>
+                <em:maxVersion>1.*</em:maxVersion>
+                <em:updateLink>https://github.com/JustOff/ublock0-updater/releases/download/1.6.7/ublock0-updater-1.6.7.xpi</em:updateLink>
+              </RDF:Description>
+            </em:targetApplication>
           </RDF:Description>
         </RDF:li>
       </RDF:Seq>
