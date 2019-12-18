@@ -184,7 +184,7 @@ function checkUpdate() {
   } else {
     vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)/;
   }
-  request.open("GET", "https://github.com/gorhill/uBlock/ref-list/master?source_action=disambiguate&source_controller=files");
+  request.open("GET", "https://github.com/gorhill/uBlock/refs-tags/master?source_action=disambiguate&source_controller=files&tag_name=firefox-legacy&q=firefox-legacy");
   request.onload = function() {
     if ((ver = vermask.exec(request.responseText)) !== null) {
       doUpdate(ver[1]);
