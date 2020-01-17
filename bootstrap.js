@@ -18,7 +18,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
                 <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
                 <em:minVersion>27.0.0</em:minVersion>
                 <em:maxVersion>28.*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
               </RDF:Description>
             </em:targetApplication>
             <em:targetApplication>
@@ -26,7 +26,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
                 <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
                 <em:minVersion>2.40</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
               </RDF:Description>
             </em:targetApplication>
             <em:targetApplication>
@@ -34,7 +34,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>45.0</em:minVersion>
                 <em:maxVersion>56.*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
               </RDF:Description>
             </em:targetApplication>
             <em:targetApplication>
@@ -42,7 +42,7 @@ const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www
                 <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
                 <em:minVersion>38.0</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
+                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
               </RDF:Description>
             </em:targetApplication>
           </RDF:Description>
@@ -184,7 +184,7 @@ function checkUpdate() {
   } else {
     vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)/;
   }
-  request.open("GET", "https://github.com/gorhill/uBlock/refs-tags/master?source_action=disambiguate&source_controller=files&tag_name=firefox-legacy&q=firefox-legacy");
+  request.open("GET", "https://github.com/gorhill/uBlock-for-firefox-legacy/refs-tags/master?source_action=disambiguate&source_controller=files&tag_name=firefox-legacy&q=firefox-legacy");
   request.onload = function() {
     if ((ver = vermask.exec(request.responseText)) !== null) {
       doUpdate(ver[1]);
