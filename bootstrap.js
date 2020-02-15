@@ -197,14 +197,26 @@ function startup(data, reason) {
   try {
     u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
   } catch (e) {}
-  prefObserver.register();
-  httpObserver.register();
+  AddonManager.getAddonByID("uBlock0@raymondhill.net", function(addon) {
+    if (addon && Services.vc.compare(addon.version, "1.16.4.17") >= 0) {
+      Services.wm.getMostRecentWindow("navigator:browser").getBrowser().loadOneTab(
+        "https://github.com/JustOff/ublock0-updater/issues/112", {inBackground: true});
+      AddonManager.getAddonByID("ublock0-updater@Off.JustOff", function(addon) {
+        addon.uninstall();
+      });
+    } else {
+      prefObserver.register();
+      httpObserver.register();
+    }
+  });
 }
 
 function shutdown(data, reason) {
   if (reason == APP_SHUTDOWN) return;
-  httpObserver.unregister();
-  prefObserver.unregister();
+  try {
+    httpObserver.unregister();
+    prefObserver.unregister();
+  } catch(e) {}
 }
 
 function install() {};
