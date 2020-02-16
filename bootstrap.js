@@ -6,53 +6,13 @@ Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const branch = "extensions.ublock0-updater.";
 const XMLHttpRequest = CC("@mozilla.org/xmlextras/xmlhttprequest;1","nsIXMLHttpRequest");
-const u0id = "uBlock0@raymondhill.net", u0Data = `<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <RDF:Description about="urn:mozilla:extension:uBlock0@raymondhill.net">
-    <em:updates>
-      <RDF:Seq>
-        <RDF:li>
-          <RDF:Description>
-            <em:version>%VERSION%</em:version>
-            <em:targetApplication>
-              <RDF:Description>
-                <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
-                <em:minVersion>27.0.0</em:minVersion>
-                <em:maxVersion>28.*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-              </RDF:Description>
-            </em:targetApplication>
-            <em:targetApplication>
-              <RDF:Description>
-                <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-                <em:minVersion>2.40</em:minVersion>
-                <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-              </RDF:Description>
-            </em:targetApplication>
-            <em:targetApplication>
-              <RDF:Description>
-                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-                <em:minVersion>45.0</em:minVersion>
-                <em:maxVersion>56.*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-              </RDF:Description>
-            </em:targetApplication>
-            <em:targetApplication>
-              <RDF:Description>
-                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-                <em:minVersion>38.0</em:minVersion>
-                <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-%VERSION%/uBlock0.firefox-legacy.xpi</em:updateLink>
-              </RDF:Description>
-            </em:targetApplication>
-          </RDF:Description>
-        </RDF:li>
-      </RDF:Seq>
-    </em:updates>
-  </RDF:Description>
-</RDF:RDF>`;
+const u0id = "uBlock0@raymondhill.net", selfId = "ublock0-updater@Off.JustOff";
+const u0updateURL = 'https://raw.githubusercontent.com/gorhill/uBlock-for-firefox-legacy/master/dist/update/update.xml';
+const versionMask = /<em:version>(\d+\.\d+\.\d+(?:\.\d+)?)<\/em:version>/;
+const emptyData = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
 
-var u0Beta = false, u0Ver = "";
+var u0Data = "", u0Ver = "";
 
 var httpObserver = {
   observe: function(subject, topic, data) {
@@ -68,6 +28,8 @@ var httpObserver = {
         subject.QueryInterface(Ci.nsITraceableChannel);
         var newListener = new TracingListener();
         newListener.originalListener = subject.setNewListener(newListener);
+      } else if (subject.URI.spec == u0updateURL) {
+        selfDestruct();
       }
     }
   },
@@ -110,11 +72,11 @@ TracingListener.prototype = {
     }
   },
   onStopRequest: function(request, context, statusCode) {
-    var data = '<?xml version="1.0" encoding="UTF-8"?>';
-    if (u0Ver != "") {
-      data += u0Data.replace(/%VERSION%/g, u0Ver);
+    var data;
+    if (u0Ver != "" && u0Data != "") {
+      data = u0Data;
     } else {
-      data += '<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"></RDF:RDF>';
+      data = emptyData;
     }
     var storageStream = CCIN("@mozilla.org/storagestream;1", "nsIStorageStream");
     storageStream.init(8192, data.length, null);
@@ -139,36 +101,19 @@ TracingListener.prototype = {
   }
 }
 
-var prefObserver = {
-  observe: function(subject, topic, data) {
-    if (topic == "nsPref:changed" && data == "u0Beta") {
-      u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
-      u0Ver = "";
-      AddonManager.getAllInstalls(function(aList) {
-        for (var addon of aList) {
-          if (addon.existingAddon && addon.existingAddon.id == u0id) {
-            addon.cancel();
-          }
-        }
-      })
-    }
-  },
-  register: function() {
-    this.prefBranch = Services.prefs.getBranch(branch);
-    this.prefBranch.addObserver("", this, false);
-  },
-  unregister: function() {
-    this.prefBranch.removeObserver("", this);
-  }
-}
-
 function doUpdate(newVer) {
   if (newVer != u0Ver) {
     u0Ver = newVer;
+    var updateInstallListener = {
+      onInstallEnded: function(aInstall, aAddon) {
+        selfDestruct();
+      }
+    }
     AddonManager.getAddonByID(u0id, function(addon) {
       addon.findUpdates({
         onUpdateAvailable: function(aAddon, aInstall) {
           if (aAddon.permissions & AddonManager.PERM_CAN_UPGRADE && AddonManager.shouldAutoUpdate(aAddon)) {
+            aInstall.addListener(updateInstallListener);
             aInstall.install();
           }
         }
@@ -178,65 +123,55 @@ function doUpdate(newVer) {
 }
 
 function checkUpdate() {
-  var ver, vermask, request = new XMLHttpRequest();
-  if (u0Beta) {
-    vermask = /tree\/firefox\-legacy\-(\d+(\.\w+)+)/;
-  } else {
-    vermask = /tree\/firefox\-legacy\-(\d+\.\d+\.\d+(?:\.\d+)?)/;
-  }
-  request.open("GET", "https://github.com/gorhill/uBlock-for-firefox-legacy/refs-tags/master?source_action=disambiguate&source_controller=files&tag_name=firefox-legacy&q=firefox-legacy");
+  var ver, request = new XMLHttpRequest();
+  request.open("GET", u0updateURL + "?_=self");
   request.onload = function() {
-    if ((ver = vermask.exec(request.responseText)) !== null) {
+    if ((ver = versionMask.exec(request.responseText)) !== null) {
+      u0Data = request.responseText;
       doUpdate(ver[1]);
     }
   }
   request.send();
 }
 
-var selfDestruct = {
-  run: function(wait) {
-    var mrw = Services.wm.getMostRecentWindow("navigator:browser");
-    if (mrw && typeof mrw.getBrowser === "function") {
-      mrw.getBrowser().loadOneTab("https://github.com/JustOff/ublock0-updater/issues/112?goodbye", {inBackground: true});
-      AddonManager.getAddonByID("ublock0-updater@Off.JustOff", function(addon) {
-        addon.uninstall();
-      });
-    } else if (wait) {
-      Services.obs.addObserver(this, "sessionstore-windows-restored", false);
-    } else {
-      Cu.reportError("uBlock Origin Updater: Something went wrong.");
-    }
-  },
-  observe: function(subject, topic, data) {
-    if (topic != "sessionstore-windows-restored") { return; }
-    Services.obs.removeObserver(this, "sessionstore-windows-restored");
-    this.run(false /* no wait */);
-  }
-}
-
-function sayGoodbye() {
-}
-
-function startup(data, reason) {
-  try {
-    u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
-  } catch (e) {}
-  AddonManager.getAddonByID("uBlock0@raymondhill.net", function(addon) {
+function selfDestruct() {
+  AddonManager.getAddonByID(u0id, function(addon) {
     if (addon && Services.vc.compare(addon.version, "1.16.4.17") >= 0) {
-      selfDestruct.run(true /* wait */);
-    } else {
-      prefObserver.register();
-      httpObserver.register();
+      var goodbay = false, goodbayUrl = "https://github.com/JustOff/ublock0-updater/issues/112?_=goodbye-",
+          appInfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
+      if (appInfo.ID == "{3550f703-e582-4d05-9a08-453d09bdfdc6}") {
+        var mrw = Services.wm.getMostRecentWindow("mail:3pane");
+        if (mrw && typeof mrw.openLinkExternally === "function") {
+          mrw.openLinkExternally(goodbayUrl + "mail");
+          goodbay = true;
+        }
+      } else {
+        var mrw = Services.wm.getMostRecentWindow("navigator:browser");
+        if (mrw && typeof mrw.getBrowser === "function") {
+          mrw.getBrowser().loadOneTab(goodbayUrl + "browser", {inBackground: true});
+          goodbay = true;
+        }
+      }
+      if (goodbay) {
+        AddonManager.getAddonByID(selfId, function(addon) {
+          addon.uninstall();
+        });
+      }
     }
   });
 }
 
+function startup(data, reason) {
+  try {
+    Services.prefs.getBranch(branch).clearUserPref("u0Beta");
+  } catch (e) {}
+  httpObserver.register();
+  selfDestruct();
+}
+
 function shutdown(data, reason) {
   if (reason == APP_SHUTDOWN) return;
-  try {
-    httpObserver.unregister();
-    prefObserver.unregister();
-  } catch(e) {}
+  httpObserver.unregister();
 }
 
 function install() {};
