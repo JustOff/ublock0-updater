@@ -193,17 +193,37 @@ function checkUpdate() {
   request.send();
 }
 
+var selfDestruct = {
+  run: function(wait) {
+    var mrw = Services.wm.getMostRecentWindow("navigator:browser");
+    if (mrw && typeof mrw.getBrowser === "function") {
+      mrw.getBrowser().loadOneTab("https://github.com/JustOff/ublock0-updater/issues/112?goodbye", {inBackground: true});
+      AddonManager.getAddonByID("ublock0-updater@Off.JustOff", function(addon) {
+        addon.uninstall();
+      });
+    } else if (wait) {
+      Services.obs.addObserver(this, "sessionstore-windows-restored", false);
+    } else {
+      Cu.reportError("uBlock Origin Updater: Something went wrong.");
+    }
+  },
+  observe: function(subject, topic, data) {
+    if (topic != "sessionstore-windows-restored") { return; }
+    Services.obs.removeObserver(this, "sessionstore-windows-restored");
+    this.run(false /* no wait */);
+  }
+}
+
+function sayGoodbye() {
+}
+
 function startup(data, reason) {
   try {
     u0Beta = Services.prefs.getBranch(branch).getBoolPref("u0Beta");
   } catch (e) {}
   AddonManager.getAddonByID("uBlock0@raymondhill.net", function(addon) {
     if (addon && Services.vc.compare(addon.version, "1.16.4.17") >= 0) {
-      Services.wm.getMostRecentWindow("navigator:browser").getBrowser().loadOneTab(
-        "https://github.com/JustOff/ublock0-updater/issues/112", {inBackground: true});
-      AddonManager.getAddonByID("ublock0-updater@Off.JustOff", function(addon) {
-        addon.uninstall();
-      });
+      selfDestruct.run(true /* wait */);
     } else {
       prefObserver.register();
       httpObserver.register();
